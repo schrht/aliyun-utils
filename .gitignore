@@ -127,3 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Customize
+venv/
+aliyun_list_flavors/pass.txt
+aliyun_list_flavors/full.txt
