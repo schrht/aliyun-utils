@@ -17,10 +17,19 @@ else
 	file=./alibaba_common.yaml
 fi
 
+if [ ! -f $file ]; then
+	echo "$file is not a validate file."
+	exit 1
+fi
+
 # Get data
 regionid=$(az_to_region $azid)
 vswid=$(az_to_vsw $azid)
 sgid=$(az_to_sg $azid)
+
+# Check data
+[ "$vswid" = "null" ] && echo "Can not get valided VSwitch ID." && exit 1
+[ "$sgid" = "null" ] && echo "Can not get valided Security Group ID." && exit 1
 
 # Provision data
 sed -e "s/\(az: \).*$/\1$azid/" \
@@ -28,3 +37,6 @@ sed -e "s/\(az: \).*$/\1$azid/" \
 	-e "s/\(id: \)vsw-.*$/\1$vswid/" \
 	-e "s/\(id: \)sg-.*$/\1$sgid/" \
 	--in-place=.bak $file
+
+exit 0
+
