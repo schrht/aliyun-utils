@@ -49,35 +49,40 @@ for instance_type in $instance_types; do
     InstanceTypeId=$(echo $type_block | jq -r '.InstanceTypeId')
     CpuCoreCount=$(echo $type_block | jq -r '.CpuCoreCount')
     MemorySize=$(echo $type_block | jq -r '.MemorySize')
+    EniQuantity=$(echo $type_block | jq -r '.EniQuantity')
+    EniTotalQuantity=$(echo $type_block | jq -r '.EniTotalQuantity')
     LocalStorageAmount=$(echo $type_block | jq -r '.LocalStorageAmount')
     LocalStorageCapacity=$(echo $type_block | jq -r '.LocalStorageCapacity')
     LocalStorageCategory=$(echo $type_block | jq -r '.LocalStorageCategory')
-    EniQuantity=$(echo $type_block | jq -r '.EniQuantity')
-    EniTotalQuantity=$(echo $type_block | jq -r '.EniTotalQuantity')
 
-    if [ ! -z "$LocalStorageCategory" ] &&
-        [ "$LocalStorageCategory" = "local_ssd_pro" ]; then
-        LocalStorageCategory=ssd
-    else
-        echo "error: unknown LocalStorageCategory ($LocalStorageCategory)"
+    # convert and dump to the yaml file
+    echo >> $yamlf
+    echo "    $InstanceTypeId:" >> $yamlf
+    echo "        name: $InstanceTypeId" >> $yamlf
+    echo "        cpu: $CpuCoreCount" >> $yamlf
+    echo "        memory: $MemorySize" >> $yamlf
+
+    if [ "$EniQuantity" != "$EniTotalQuantity" ]; then
+        echo "Error: EniQuantity($EniQuantity) mismatched with \
+EniTotalQuantity($EniTotalQuantity)"
         exit 1
+    fi
+    echo "        nic_count: $EniTotalQuantity" >> $yamlf
+
+    if [ "$LocalStorageAmount" != "null" ]; then
+        echo "        disk_count: $LocalStorageAmount" >> $yamlf
+        echo "        disk_size: $LocalStorageCapacity" >> $yamlf
+        if [ "$LocalStorageCategory" = "local_ssd_pro" ]; then
+            echo "        disk_type: ssd" >> $yamlf
+        else
+            echo "Error: unknown LocalStorageCategory ($LocalStorageCategory)"
+            exit 1
+        fi
     fi
 done
 
-# Target:
-# ----------
-# Flavor: !mux
-#     ecs.i1-c10d1.8xlarge:
-#         name: ecs.i1-c10d1.8xlarge
-#         cpu: 32
-#         memory: 128
-#         disk_count: 2
-#         disk_size: 1456
-#         disk_type: ssd
-#         nic_count: 8
-#     ecs.hfg5.xlarge:
-#         name: ecs.hfg5.xlarge
-#         cpu: 4
-#         memory: 16
+# move the yaml file
+mv ./alibaba_flavors.yaml ./alibaba_flavors.yaml.bak 2>/dev/null
+mv $yamlf ./alibaba_flavors.yaml
 
 exit 0
