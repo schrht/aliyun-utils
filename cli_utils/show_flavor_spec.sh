@@ -1,12 +1,24 @@
 #!/bin/bash
 
 function show_usage() {
-    echo -e "Usage: $0 <instance family or instance type>"
+    echo -e "Usage: $0 <instance family or instance type> [YAML file]"
+}
+
+function json2yaml {
+    python -c 'import sys, yaml, json; print(yaml.dump(json.loads(sys.stdin.read())))'
 }
 
 if [ -z "$1" ]; then
+	echo "Arg1: An instance family name or specific type name should be given."
     show_usage
     exit 1
+fi
+
+if [ -z "$2" ]; then
+	echo "Arg2: YAML file is not spcified, using './alibaba_flavors.yaml'."
+	file=./alibaba_flavors.yaml
+else
+    file=$2
 fi
 
 if [ ! -z "$(echo $1 | cut -d. -f3)" ]; then
@@ -82,7 +94,8 @@ EniTotalQuantity($EniTotalQuantity)"
 done
 
 # move the yaml file
-mv ./alibaba_flavors.yaml ./alibaba_flavors.yaml.bak 2>/dev/null
-mv $yamlf ./alibaba_flavors.yaml
+mv $file $file.bak 2>/dev/null
+mv $yamlf $file
 
 exit 0
+
