@@ -4,19 +4,19 @@ function show_usage() {
     echo -e "Usage: $0 <instance family or instance type> [YAML file]"
 }
 
-function json2yaml {
+function json2yaml() {
     python -c 'import sys, yaml, json; print(yaml.dump(json.loads(sys.stdin.read())))'
 }
 
 if [ -z "$1" ]; then
-	echo "Arg1: An instance family name or specific type name should be given."
+    echo "Arg1: An instance family name or specific type name should be given."
     show_usage
     exit 1
 fi
 
 if [ -z "$2" ]; then
-	echo "Arg2: YAML file is not spcified, using './alibaba_flavors.yaml'."
-	file=./alibaba_flavors.yaml
+    echo "Arg2: YAML file is not spcified, using './alibaba_flavors.yaml'."
+    file=./alibaba_flavors.yaml
 else
     file=$2
 fi
@@ -67,19 +67,19 @@ for instance_type in $instance_types; do
     LocalStorageCategory=$(echo $type_block | jq -r '.LocalStorageCategory')
 
     # convert and dump to the yaml file
-    echo >> $yamlf
-    echo "    $InstanceTypeId:" >> $yamlf
-    echo "        name: $InstanceTypeId" >> $yamlf
-    echo "        cpu: $CpuCoreCount" >> $yamlf
-    echo "        memory: $MemorySize" >> $yamlf
+    echo >>$yamlf
+    echo "    $InstanceTypeId:" >>$yamlf
+    echo "        name: $InstanceTypeId" >>$yamlf
+    echo "        cpu: $CpuCoreCount" >>$yamlf
+    echo "        memory: $MemorySize" >>$yamlf
 
-    echo "        nic_count: $EniQuantity" >> $yamlf
+    echo "        nic_count: $EniQuantity" >>$yamlf
 
     if [ "$LocalStorageAmount" != "null" ]; then
-        echo "        disk_count: $LocalStorageAmount" >> $yamlf
-        echo "        disk_size: $LocalStorageCapacity" >> $yamlf
+        echo "        disk_count: $LocalStorageAmount" >>$yamlf
+        echo "        disk_size: $LocalStorageCapacity" >>$yamlf
         if [ "$LocalStorageCategory" = "local_ssd_pro" ]; then
-            echo "        disk_type: ssd" >> $yamlf
+            echo "        disk_type: ssd" >>$yamlf
         else
             echo "Error: unknown LocalStorageCategory ($LocalStorageCategory)"
             exit 1
@@ -92,4 +92,3 @@ mv $file $file.bak 2>/dev/null
 mv $yamlf $file
 
 exit 0
-
