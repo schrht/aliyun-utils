@@ -62,7 +62,6 @@ for instance_type in $instance_types; do
     CpuCoreCount=$(echo $type_block | jq -r '.CpuCoreCount')
     MemorySize=$(echo $type_block | jq -r '.MemorySize')
     EniQuantity=$(echo $type_block | jq -r '.EniQuantity')
-    EniTotalQuantity=$(echo $type_block | jq -r '.EniTotalQuantity')
     LocalStorageAmount=$(echo $type_block | jq -r '.LocalStorageAmount')
     LocalStorageCapacity=$(echo $type_block | jq -r '.LocalStorageCapacity')
     LocalStorageCategory=$(echo $type_block | jq -r '.LocalStorageCategory')
@@ -74,12 +73,7 @@ for instance_type in $instance_types; do
     echo "        cpu: $CpuCoreCount" >> $yamlf
     echo "        memory: $MemorySize" >> $yamlf
 
-    if [ "$EniQuantity" != "$EniTotalQuantity" ]; then
-        echo "Error: EniQuantity($EniQuantity) mismatched with \
-EniTotalQuantity($EniTotalQuantity)"
-        exit 1
-    fi
-    echo "        nic_count: $EniTotalQuantity" >> $yamlf
+    echo "        nic_count: $EniQuantity" >> $yamlf
 
     if [ "$LocalStorageAmount" != "null" ]; then
         echo "        disk_count: $LocalStorageAmount" >> $yamlf
