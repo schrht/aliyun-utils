@@ -2,6 +2,14 @@ function _is_az() {
 	[[ "$1" = *-*-*[a-z] ]] && return 0 || return 1
 }
 
+function _is_region() {
+	[[ "$1" = *-* ]] && return 0 || return 1
+}
+
+function _is_image_id() {
+	[[ "$1" = m-* ]] && return 0 || return 1
+}
+
 function az_to_region() {
 	# Get Region ID by Zone ID
 	_is_az "$1" || return 1
@@ -44,4 +52,21 @@ function az_to_sg() {
 		--VpcId $(az_to_vpc "$1"))
 	[ $? = 0 ] || return 1
 	echo $x | jq -r '.SecurityGroups.SecurityGroup[0].SecurityGroupId'
+}
+
+function image_id_to_name() {
+	# Get image name by image ID
+	_is_image_id "$1" || return 1
+	_is_region "$2" || return 1
+	x=$(aliyun ecs DescribeImages --RegionId $2 --ImageId $1)
+	[ $? = 0 ] || return 1
+	echo $x | jq -r '.Images.Image[].ImageName'
+}
+
+function image_name_to_id() {
+	# Get image name by image ID
+	_is_region "$2" || return 1
+	x=$(aliyun ecs DescribeImages --RegionId $2 --ImageName $1)
+	[ $? = 0 ] || return 1
+	echo $x | jq -r '.Images.Image[].ImageId'
 }
