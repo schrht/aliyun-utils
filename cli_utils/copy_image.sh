@@ -81,6 +81,10 @@ fi
 
 if [ -z $image_id ]; then
     image_id=$(image_name_to_id $image_name $region)
+    if [ -z $image_id ]; then
+        echo "$(basename $0): no image named \"$image_name\" in region \"$region\"." >&2
+        exit 1
+    fi
 fi
 
 _is_image_id $image_id
