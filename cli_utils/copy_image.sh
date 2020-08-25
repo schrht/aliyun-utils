@@ -95,19 +95,7 @@ fi
 
 description="Copied from image $image_id in the $region region by $(basename $0)."
 
-# aliyun ecs CopyImage --help
-# Alibaba Cloud Command Line Interface Version 3.0.10
-
-# Product: Ecs (Elastic Compute Service)
-# Link:    https://help.aliyun.com/api/ecs/CopyImage.html
-
-# Parameters:
-#   --ImageId                String  Required
-#   --RegionId               String  Required
-#   --DestinationDescription String  Optional
-#   --DestinationImageName   String  Optional
-#   --DestinationRegionId    String  Optional
-
+# Confirm
 echo "Please confirm the following information."
 echo "FROM-REGION          : $region"
 echo "TO-REGION            : $to_region"
@@ -122,8 +110,25 @@ if [ "$answer" = "N" ] || [ "$answer" = "n" ]; then
     exit 0
 fi
 
-aliyun ecs CopyImage --RegionId $region --ImageId $image_id \
+# Copy
+x=$(aliyun ecs CopyImage --RegionId $region --ImageId $image_id \
     --DestinationRegionId $to_region --DestinationImageName $to_image_name \
-    --DestinationDescription "$description"
+    --DestinationDescription "$description")
+echo $x
+
+if [ "$?" != "0" ]; then
+    echo "$(basename $0): Failed to run Aliyun API." >&2
+    exit 1
+else
+    to_image_id=$(echo $x | jq -r '.ImageId')
+fi
+
+# Helper
+echo ""
+echo "What's Next?"
+echo "* Cancel the copy process:"
+echo "$ aliyun ecs CancelCopyImage --RegionId $to_region --ImageId $to_image_id"
+echo "* Check status of the image:"
+echo "$ aliyun ecs DescribeImages --RegionId $to_region --ImageId $to_image_id"
 
 exit 0
