@@ -122,8 +122,8 @@ if [ "$answer" = "N" ] || [ "$answer" = "n" ]; then
     exit 0
 fi
 
-# aliyun ecs CopyImage --RegionId $region --ImageId $image_id \
-#     --DestinationRegionId $to_region --DestinationImageName $to_image_name \
-#     --DestinationDescription $description
+aliyun ecs CopyImage --RegionId $region --ImageId $image_id \
+    --DestinationRegionId $to_region --DestinationImageName $to_image_name \
+    --DestinationDescription "$description"
 
 exit 0
