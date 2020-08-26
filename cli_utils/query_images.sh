@@ -62,26 +62,28 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
+blocks=$(echo $x | jq -r '.Images.Image[]')
+
 if [ "$all" = "true" ]; then
-    id_list=$(echo $x | jq -r '.Images.Image[].ImageId')
+    id_list=$(echo $blocks | jq -r '.ImageId')
 else
     # Platform is "Red Hat" only
-    id_list=$(echo $x | jq -r '.Images.Image[] | select(.Platform=="Red Hat") | .ImageId')
+    id_list=$(echo $blocks | jq -r 'select(.Platform=="Red Hat") | .ImageId')
 fi
 
 # Query image one-by-one and add data into a table
 for id in $id_list; do
-    x=$(aliyun ecs DescribeImages --RegionId $region --ImageId $id)
+    block=$(echo $blocks | jq -r "select(.ImageId==\"$id\")")
     if [ "$?" != "0" ]; then
-        echo "$(basename $0): Failed to run Aliyun API." >&2
+        echo "$(basename $0): Error while looking for the specific image -- $id" >&2
         exit 1
     fi
 
-    name=$(echo $x | jq -r '.Images.Image[].ImageName')
-    id=$(echo $x | jq -r '.Images.Image[].ImageId')
-    ostype=$(echo $x | jq -r '.Images.Image[].OSType')
-    platform=$(echo $x | jq -r '.Images.Image[].Platform' | tr ' ' '_')
-    status=$(echo $x | jq -r '.Images.Image[].Status')
+    name=$(echo $block | jq -r '.ImageName')
+    id=$(echo $block | jq -r '.ImageId')
+    ostype=$(echo $block | jq -r '.OSType')
+    platform=$(echo $block | jq -r '.Platform' | tr ' ' '_')
+    status=$(echo $block | jq -r '.Status')
 
     table="${table}$(printf '%s,%s,%s,%s,%s' $name $id $ostype $platform $status)\n"
 done
