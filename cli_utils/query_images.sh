@@ -4,11 +4,12 @@
 # Maintainer: Charles Shih <schrht@gmail.com>
 
 function show_usage() {
-    echo "Copy image to the other region."
-    echo "$(basename $0) [-h] <-r region>"
+    echo "Query images from the specified region."
+    echo "$(basename $0) [-h] <-r region> [-a]"
+    echo "-a: query images for all platforms rather than Red Hat."
 }
 
-while getopts :hr: ARGS; do
+while getopts :hr:a ARGS; do
     case $ARGS in
     h)
         # Help option
@@ -18,6 +19,10 @@ while getopts :hr: ARGS; do
     r)
         # region
         region=$OPTARG
+        ;;
+    a)
+        # all
+        all=true
         ;;
     "?")
         echo "$(basename $0): unknown option: $OPTARG" >&2
