@@ -5,12 +5,12 @@
 
 function show_usage() {
     echo "Copy image to the other region."
-    echo "$(basename $0) <-r from-region> <-R to-region> \
-<-i from-image-id | -n from-image-name> [-N to-image-name]"
+    echo "$(basename $0) [-h] <-r from-region> <-R to-region> \
+<-i from-image-id | -n from-image-name> [-N to-image-name] [-q]"
     echo "Note: '-i' will overwrite '-n' if both provided."
 }
 
-while getopts :hr:R:i:n:N: ARGS; do
+while getopts :hr:R:i:n:N:q ARGS; do
     case $ARGS in
     h)
         # Help option
@@ -36,6 +36,10 @@ while getopts :hr:R:i:n:N: ARGS; do
     N)
         # to-image-name
         to_image_name=$OPTARG
+        ;;
+    q)
+        # quiet
+        quiet=true
         ;;
     "?")
         echo "$(basename $0): unknown option: $OPTARG" >&2
@@ -100,18 +104,20 @@ fi
 description="Copied from image $image_id in the $region region by $(basename $0)."
 
 # Confirm
-echo "Please confirm the following information."
-echo "FROM-REGION          : $region"
-echo "TO-REGION            : $to_region"
-echo "FROM-IMAGE-ID        : $image_id"
-echo "FROM-IMAGE-NAME      : $image_name"
-echo "TO-IMAGE-NAME        : $to_image_name"
-echo "TO-IMAGE-DESCRIPTION : $description"
-read -p "Do you want to process the image copy [Y/n]? " answer
-echo
-if [ "$answer" = "N" ] || [ "$answer" = "n" ]; then
-    echo "Cancelled."
-    exit 0
+if [ "$quiet" != "true" ]; then
+    echo "Please confirm the following information."
+    echo "FROM-REGION          : $region"
+    echo "TO-REGION            : $to_region"
+    echo "FROM-IMAGE-ID        : $image_id"
+    echo "FROM-IMAGE-NAME      : $image_name"
+    echo "TO-IMAGE-NAME        : $to_image_name"
+    echo "TO-IMAGE-DESCRIPTION : $description"
+    read -p "Do you want to process the image copy [Y/n]? " answer
+    echo
+    if [ "$answer" = "N" ] || [ "$answer" = "n" ]; then
+        echo "Cancelled."
+        exit 0
+    fi
 fi
 
 # Copy
@@ -128,11 +134,13 @@ else
 fi
 
 # Helper
-echo ""
-echo "What's Next?"
-echo "* Cancel the copy process:"
-echo "$ aliyun ecs CancelCopyImage --RegionId $to_region --ImageId $to_image_id"
-echo "* Check status of the image:"
-echo "$ aliyun ecs DescribeImages --RegionId $to_region --ImageId $to_image_id"
+if [ "$quiet" != "true" ]; then
+    echo ""
+    echo "What's Next?"
+    echo "* Cancel the copy process:"
+    echo "$ aliyun ecs CancelCopyImage --RegionId $to_region --ImageId $to_image_id"
+    echo "* Check status of the image:"
+    echo "$ aliyun ecs DescribeImages --RegionId $to_region --ImageId $to_image_id"
+fi
 
 exit 0
