@@ -89,7 +89,7 @@ for id in $id_list; do
 done
 
 # Show the table contents with format
-echo -e $table | sort -t , -k 4 |
+echo -e $table | sort | sort -t , -k 4 |
     column -t -s , -N ImageName,ImageId,OSType,Platform,Status
 
 exit 0
