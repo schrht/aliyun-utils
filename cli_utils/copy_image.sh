@@ -124,12 +124,12 @@ fi
 x=$(aliyun ecs CopyImage --RegionId $region --ImageId $image_id \
     --DestinationRegionId $to_region --DestinationImageName $to_image_name \
     --DestinationDescription "$description")
-echo $x
-
 if [ "$?" != "0" ]; then
+    echo $x
     echo "$(basename $0): Failed to run Aliyun API." >&2
     exit 1
 else
+    echo $x
     to_image_id=$(echo $x | jq -r '.ImageId')
 fi
 
