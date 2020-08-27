@@ -47,7 +47,8 @@ if [ -z $region ]; then
 fi
 
 # Main
-source ./cli_utils.sh
+codepath=$(dirname $(which $0))
+source $codepath/cli_utils.sh
 
 _is_region $region
 if [ "$?" != "0" ]; then

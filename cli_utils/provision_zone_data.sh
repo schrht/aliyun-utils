@@ -1,6 +1,6 @@
 #!/bin/bash
 
-codepath=$(dirname $0)
+codepath=$(dirname $(which $0))
 source $codepath/cli_utils.sh
 
 # Parse params
