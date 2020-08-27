@@ -56,6 +56,7 @@ function az_to_sg() {
 
 function image_id_to_name() {
 	# Get image name by image ID
+	# Help: $0 <image-id> <region>
 	_is_image_id "$1" || return 1
 	_is_region "$2" || return 1
 	x=$(aliyun ecs DescribeImages --RegionId $2 --ImageId $1)
@@ -64,7 +65,8 @@ function image_id_to_name() {
 }
 
 function image_name_to_id() {
-	# Get image name by image ID
+	# Get image id by image name
+	# Help: $0 <image-name> <region>
 	_is_region "$2" || return 1
 	x=$(aliyun ecs DescribeImages --RegionId $2 --ImageName $1)
 	[ $? = 0 ] || return 1
