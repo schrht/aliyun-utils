@@ -32,11 +32,16 @@ sgid=$(az_to_sg $azid)
 [ "$sgid" = "null" ] && echo "Can not get valided Security Group ID." && exit 1
 
 # Provision data
-sed -e "s/\(az: \).*$/\1$azid/" \
-	-e "s/\(region: \).*$/\1$regionid/" \
-	-e "s/\(id: \)vsw-.*$/\1$vswid/" \
-	-e "s/\(id: \)sg-.*$/\1$sgid/" \
-	--in-place=.bak $file
+# sed -e "s/\(az: \).*$/\1$azid/" \
+# 	-e "s/\(region: \).*$/\1$regionid/" \
+# 	-e "s/\(id: \)vsw-.*$/\1$vswid/" \
+# 	-e "s/\(id: \)sg-.*$/\1$sgid/" \
+# 	--in-place=.bak $file
+
+write_data $file VM.az $azid
+write_data $file VM.region $regionid
+write_data $file Network.VSwitch.id $vswid
+write_data $file SecurityGroup.id $sgid
 
 exit 0
 

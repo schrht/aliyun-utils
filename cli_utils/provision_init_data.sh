@@ -2,7 +2,7 @@
 
 function update() {
 	# Usage: update <key> <value>
-	sed -i "s/{{ $1 }}/$2/g" $file
+	sed -i "s/{{$1}}/$2/g" $file
 }
 
 codepath=$(dirname $(which $0))
@@ -14,33 +14,33 @@ echo >$file \
 	'Cloud:
     provider: alibaba
 Credential:
-    access_key_id: {{ access_key_id }}
-    secretaccess_key: {{ secretaccess_key }}
+    access_key_id: {{access_key_id}}
+    secretaccess_key: {{secretaccess_key}}
 Subscription:
     username:
     password:
 VM:
-    rhel_ver: "{{ rhel_ver }}"
-    username: {{ username }}
-    password: {{ password }}
-    keypair: {{ keypair }}
-    vm_name: "{{ prefix }}-instance-{{ suffix }}"
-    az: {{ az_id }}
-    region: {{ region_id }}
+    rhel_ver: {{rhel_ver}}
+    username: {{username}}
+    password: {{password}}
+    keypair: {{keypair}}
+    vm_name: "{{prefix}}-instance-{{suffix}}"
+    az: {{az_id}}
+    region: {{region_id}}
 Image:
-    name: {{ image_name }}
-    id: {{ image_id }}
+    name: {{image_name}}
+    id: {{image_id}}
 Network:
     VSwitch:
-        id: {{ vsw_id }}
+        id: {{vsw_id}}
 SecurityGroup:
-    id: {{ sg_id }}
+    id: {{sg_id}}
 Disk:
     cloud_disk_count: 16
-    cloud_disk_name: "{{ prefix }}-disk-{{ suffix }}"
+    cloud_disk_name: "{{prefix}}-disk-{{suffix}}"
     cloud_disk_size: 100
 NIC:
-    nic_name: "{{ prefix }}-nic-{{ suffix }}"'
+    nic_name: "{{prefix}}-nic-{{suffix}}"'
 
 # Get key id and secret
 key_id=$(grep aliyun_access_key_id $HOME/.aliyuncli/credentials | sed 's/.*=\s*\(\w\)/\1/')

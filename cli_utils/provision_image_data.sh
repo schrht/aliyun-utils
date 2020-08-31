@@ -46,10 +46,15 @@ else
 fi
 
 # Provision data
-sed -e "s/{{ rehl_ver }}/$rehl_ver/" \
-	-e "s/{{ username }}/$username/" \
-	-e "s/{{ image_name }}/$image_name/" \
-	-e "s/{{ image_id }}/$image_id/" \
-	--in-place=.bak $file
+# sed -e "s/{{ rehl_ver }}/$rehl_ver/" \
+# 	-e "s/{{ username }}/$username/" \
+# 	-e "s/{{ image_name }}/$image_name/" \
+# 	-e "s/{{ image_id }}/$image_id/" \
+# 	--in-place=.bak $file
+
+write_data $file VM.rhel_ver $rehl_ver
+write_data $file VM.username $username
+write_data $file Image.name $image_name
+write_data $file Image.id $image_id
 
 exit 0
