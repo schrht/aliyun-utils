@@ -72,3 +72,42 @@ function image_name_to_id() {
 	[ $? = 0 ] || return 1
 	echo $x | jq -r '.Images.Image[].ImageId'
 }
+
+function read_data() {
+	# Read specified data from a yaml file
+	# Usage: $0 <file> <keypath>
+	[ "$#" != "2" ] && return 1
+	file=$1
+	keypath=$2
+	pos=1
+	for key in $(echo $keypath | tr '.' ' '); do
+		base=$pos
+		pos=$(sed -n "$pos,\$p" $file | grep "^\s*$key:" -n -m 1 | cut -d: -f1)
+		[ -z "$pos" ] && return 1
+		pos=$(($base + $pos - 1))
+	done
+
+	sed -n "${pos}p" $file | sed 's/.*:\s*\(\S*\)/\1/' || return 1
+
+	return 0
+}
+
+function write_data() {
+	# Write specified data from a yaml file
+	# Usage: $0 <file> <keypath> <value>
+	[ "$#" != "3" ] && return 1
+	file=$1
+	keypath=$2
+	value=$3
+	pos=1
+	for key in $(echo $keypath | tr '.' ' '); do
+		base=$pos
+		pos=$(sed -n "$pos,\$p" $file | grep "^\s*$key:" -n -m 1 | cut -d: -f1)
+		[ -z "$pos" ] && return 1
+		pos=$(($base + $pos - 1))
+	done
+
+	sed -i "${pos}s/\(.*:\).*/\1 $value/" $file || return 1
+
+	return 0
+}
