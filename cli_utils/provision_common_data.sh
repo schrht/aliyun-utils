@@ -50,6 +50,8 @@ while getopts :hf:i:s:z:m:l: ARGS; do
 		;;
 	"?")
 		echo "$(basename $0): unknown option: $OPTARG" >&2
+		echo "Try '$(basename $0) -h' for more information." >&2
+		exit 1
 		;;
 	":")
 		echo "$(basename $0): option requires an argument -- '$OPTARG'" >&2
