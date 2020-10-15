@@ -136,26 +136,28 @@ sg_id=$(az_to_sg $az_id)
 [ -z "$vsw_id" ] && echo "$(basename $0): Failed to get the VSwitch ID." >&2 && exit 1
 [ -z "$sg_id" ] && echo "$(basename $0): Failed to get the Security Group ID." >&2 && exit 1
 
-# Get image data
-echo "$(basename $0): Getting Image ID for '$image_name' in the '$region_id' region." >&2
-image_id=$(image_name_to_id $image_name $region_id)
-if [ -z "$image_id" ]; then
-	echo "$(basename $0): Failed to get the Image ID, using value '????????'." >&2
-	image_id=????????
-fi
+# Get related data from the Image Name
+if [ ! -z "$image_name" ]; then
+	echo "$(basename $0): Getting Image ID for '$image_name' in the '$region_id' region." >&2
+	image_id=$(image_name_to_id $image_name $region_id)
+	if [ -z "$image_id" ]; then
+		echo "$(basename $0): Cannot get the Image ID for $image_name in the region $region_id." >&2
+		exit 1
+	fi
 
-image_pass=$(read_data $file VM.password)
-if [ -z "$image_pass" ]; then
-	echo "$(basename $0): Cannot get image password from '$file', using value 'RedHatQE@r$$'." >&2
-	image_pass=RedHatQE@r$$
-fi
+	rehl_ver=$(echo $image_name | sed 's/.*[A-Za-z][._-]\([0-9]\)[._-]\([0-9]\)[._-].*/\1.\2/')
 
-rehl_ver=$(echo $image_name | sed 's/.*[A-Za-z][._-]\([0-9]\)[._-]\([0-9]\)[._-].*/\1.\2/')
+	if [[ $image_name =~ _alibase_ ]] || [[ $image_name =~ _alibaba_ ]]; then
+		image_user=root
+	else
+		image_user=cloud-user
+	fi
 
-if [[ $image_name =~ _alibase_ ]] || [[ $image_name =~ _alibaba_ ]]; then
-	image_user=root
-else
-	image_user=cloud-user
+	image_pass=$(read_data $file VM.password)
+	if [ -z "$image_pass" ]; then
+		echo "$(basename $0): Cannot get image password from '$file', using value 'RedHatQE@r$$'." >&2
+		image_pass=RedHatQE@r$$
+	fi
 fi
 
 # Get disk data
@@ -186,12 +188,13 @@ write_data $file VM.region $region_id
 write_data $file Network.VSwitch.id $vsw_id
 write_data $file SecurityGroup.id $sg_id
 
-write_data $file VM.rhel_ver $rehl_ver
-write_data $file VM.username $image_user
-write_data $file VM.password $image_pass
-
-write_data $file Image.name $image_name
-write_data $file Image.id $image_id
+if [ ! -z "$image_name" ]; then
+	write_data $file Image.name $image_name
+	write_data $file Image.id $image_id
+	write_data $file VM.rhel_ver $rehl_ver
+	write_data $file VM.username $image_user
+	write_data $file VM.password $image_pass
+fi
 
 write_data $file Disk.cloud_disk_count $cloud_disk_count
 write_data $file Disk.cloud_disk_size $cloud_disk_size
