@@ -97,6 +97,7 @@ function get_flavor_json() {
 }
 
 # Main
+set -e
 
 : >$file
 
