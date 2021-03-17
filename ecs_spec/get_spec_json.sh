@@ -6,7 +6,7 @@
 
 function show_usage() {
 	echo "Query Alibaba ECS SPEC and dump to a json file."
-	echo "$(basename $0) <-f JSON_FILE> <-l FLAVOR_LIST>"
+	echo "$(basename $0) <-f FLAVOR_LIST> <-j JSON_FILE>"
 }
 
 while getopts :hf:l: ARGS; do
@@ -17,12 +17,12 @@ while getopts :hf:l: ARGS; do
 		exit 0
 		;;
 	f)
-		# Json file option
-		file=$OPTARG
-		;;
-	l)
 		# Flavor list option
 		flavors=$OPTARG
+		;;
+	j)
+		# Json file option
+		file=$OPTARG
 		;;
 	"?")
 		echo "$(basename $0): unknown option: $OPTARG" >&2
