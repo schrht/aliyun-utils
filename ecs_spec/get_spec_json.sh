@@ -41,7 +41,7 @@ while getopts :hf:l: ARGS; do
 	esac
 done
 
-if [ -z $file ] || [ -z $flavors ]; then
+if [ -z $file ] || [ -z "$flavors" ]; then
 	show_usage
 	exit 1
 fi
