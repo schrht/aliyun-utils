@@ -132,3 +132,18 @@ dmypy.json
 venv/
 aliyun_list_flavors/pass.txt
 aliyun_list_flavors/full.txt
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Customize
+venv/
+aliyun_list_flavors/*.txt
+ecs_spec/*.csv
+ecs_spec/*.json
