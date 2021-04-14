@@ -3,36 +3,21 @@
 # Description:
 #   Find best region to go based on instace types in full.txt and pass.txt
 #
-# Help:
-#   (The avocado_cloud test results...)
-#   cat results.json | jq -r '.tests[].id' | sed 's/.*-\(ecs.*\)-Image.*/\1/' | sort -u | tee ./full.txt
-#   cat results.json | jq -r '.tests[] | select(.status=="PASS") | .id' | sed 's/.*-\(ecs.*\)-Image.*/\1/' | sort -u | tee ./pass.txt
-#
-# Owner:
-#   Charles Shih
-#
-# History:
-#   v1.0  2020-02-16  charles.shih  Init Version
 
 PATH=$PATH:.
 
-touch ./pass.txt ./full.txt
-todolist=$(grep -v -f ./pass.txt ./full.txt)
+[ -f ./pass.txt ] && grep -v -f ./pass.txt ./full.txt > /tmp/todo.txt || cat ./full.txt > /tmp/todo.txt
 
-[ -z "$todolist" ] && exit 1
+echo -e "\nNotice: 'available_flavors.txt' was changed on $(stat -c %z available_flavors.txt)" 
+echo -e "With time passes you may want to run './query_available_flavors.sh -o available_flavors.txt' again..."
 
-echo -e "\nYou may want to run update_datasource.sh first..."
-
-: >/tmp/type-region.txt
-for type in $todolist; do
-	echo -e "\nSearch instance type: $type ..."
-	list_flavors.py | grep $type | tee -a /tmp/type-region.txt
+for flavor in $(cat /tmp/todo.txt); do
+	echo -e "------\n$flavor:"
+	grep $flavor ./available_flavors.txt | cut -d, -f1
 done
 
-echo -e "\nFinal results (types):"
-grep Available /tmp/type-region.txt | cut -d',' -f2 | sort | uniq -c | sort -n -r
-
-echo -e "\nFinal results (regions):"
-grep Available /tmp/type-region.txt | cut -d',' -f1 | sort | uniq -c | sort -n -r
+# get best region
+echo "======"
+grep -f /tmp/todo.txt ./available_flavors.txt | cut -d, -f1 | uniq -c | sort -nr
 
 exit 0
