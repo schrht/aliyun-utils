@@ -1,0 +1,16 @@
+aliac_agent:
+  container:
+    path: /home/cheshi/mirror/dockerspace/docker_volumes
+    names: ac7 ac8
+  testruns:
+    testcase:
+      path: /home/cheshi/mirror/dockerspace/docker_volumes/ac_data/
+    image:
+      name: image_id
+  resource:
+    inventory: /home/cheshi/mirror/codespace/aliyun-utils/aliyun_list_flavors/available_flavors.txt
+    regions:
+      - cn-hangzhou
+      - cn-beijing
+      - cn-shenzhen
+      - eu-central-1

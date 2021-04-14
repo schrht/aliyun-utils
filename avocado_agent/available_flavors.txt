@@ -1,0 +1,1 @@
+../aliyun_list_flavors/available_flavors.txt
