@@ -9,7 +9,7 @@ function show_usage() {
 	echo "$(basename $0) <-f FLAVOR_LIST> <-j JSON_FILE>"
 }
 
-while getopts :hf:l: ARGS; do
+while getopts :hf:j: ARGS; do
 	case $ARGS in
 	h)
 		# Help option
