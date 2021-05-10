@@ -147,3 +147,4 @@ venv/
 aliyun_list_flavors/*.txt
 ecs_spec/*.csv
 ecs_spec/*.json
+ecs_spec/*.txt
