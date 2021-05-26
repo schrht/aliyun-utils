@@ -44,10 +44,10 @@ while getopts :ho:r: ARGS; do
     esac
 done
 
-: ${output:=/tmp/aliyun_instance_distribution.txt}
+: ${output:=/tmp/aliyun_flavor_distribution.txt}
 
 # Main
-tmpfile=/tmp/aliyun_instance_distribution.tmp
+tmpfile=/tmp/aliyun_flavor_distribution.tmp
 : >$tmpfile
 
 # Get all regions if not specified
