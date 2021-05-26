@@ -9,7 +9,7 @@
 
 function show_usage() {
     echo "Get a list of available flavors."
-    echo "$(basename $0) <-o OUTPUT_FILE> [-r REGION_LIST]"
+    echo "$(basename $0) [-o OUTPUT_FILE] [-r REGION_LIST]"
 }
 
 while getopts :ho:r: ARGS; do
@@ -21,7 +21,7 @@ while getopts :ho:r: ARGS; do
         ;;
     o)
         # Output file option
-        file=$OPTARG
+        output=$OPTARG
         ;;
     r)
         # Region list option
@@ -44,13 +44,11 @@ while getopts :ho:r: ARGS; do
     esac
 done
 
-if [ -z $file ]; then
-    show_usage
-    exit 1
-fi
+: ${output:=/tmp/aliyun_instance_distribution.txt}
 
 # Main
-: >$file
+tmpfile=/tmp/aliyun_instance_distribution.tmp
+: >$tmpfile
 
 # Get all regions if not specified
 if [ -z "$regions" ]; then
@@ -84,9 +82,11 @@ for region in $regions; do
 
         # Dump results
         for flavor in $flavors; do
-            echo "$zone,$flavor" >>$file
+            echo "$zone,$flavor" >>$tmpfile
         done
     done
 done
+
+mv $tmpfile $output
 
 exit 0
