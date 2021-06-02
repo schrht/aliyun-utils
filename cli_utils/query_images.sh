@@ -5,11 +5,12 @@
 
 function show_usage() {
     echo "Query images from the specified region."
-    echo "$(basename $0) [-h] <-r region> [-a]"
+    echo "$(basename $0) [-h] <-r region> [-a] [-M]"
     echo "-a: query images for all platforms rather than Red Hat."
+    echo "-M: query images from Marketplace."
 }
 
-while getopts :hr:a ARGS; do
+while getopts :hr:aM ARGS; do
     case $ARGS in
     h)
         # Help option
@@ -23,6 +24,10 @@ while getopts :hr:a ARGS; do
     a)
         # all
         all=true
+        ;;
+    M)
+        # marketplace
+        marketplace=true
         ;;
     "?")
         echo "$(basename $0): unknown option: $OPTARG" >&2
@@ -57,7 +62,12 @@ if [ "$?" != "0" ]; then
 fi
 
 # Query and get image id list
-x=$(aliyun ecs DescribeImages --RegionId $region --PageSize 100)
+if [ "$marketplace" = "true" ]; then
+    x=$(aliyun ecs DescribeImages --RegionId $region \
+        --ImageOwnerAlias marketplace --PageSize 100)
+else
+    x=$(aliyun ecs DescribeImages --RegionId $region --PageSize 100)
+fi
 if [ "$?" != "0" ]; then
     echo "$(basename $0): Failed to run Aliyun API." >&2
     exit 1
@@ -80,7 +90,7 @@ for id in $id_list; do
         exit 1
     fi
 
-    name=$(echo $block | jq -r '.ImageName')
+    name=$(echo $block | jq -r '.ImageName' | tr ' ' '_')
     id=$(echo $block | jq -r '.ImageId')
     ostype=$(echo $block | jq -r '.OSType')
     platform=$(echo $block | jq -r '.Platform' | tr ' ' '_')
