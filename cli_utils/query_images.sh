@@ -61,30 +61,31 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
-# Query and get image id list
-if [ "$marketplace" = "true" ]; then
-    x=$(aliyun ecs DescribeImages --RegionId $region \
-        --ImageOwnerAlias marketplace --PageSize 100)
-else
-    x=$(aliyun ecs DescribeImages --RegionId $region --PageSize 100)
-fi
-if [ "$?" != "0" ]; then
-    echo "$(basename $0): Failed to run Aliyun API." >&2
-    exit 1
-fi
+# Query and get image info
+cmd="aliyun ecs DescribeImages --RegionId $region --PageSize 100"
+[ "$marketplace" = "true" ] && cmd="$cmd --ImageOwnerAlias marketplace"
 
-blocks=$(echo $x | jq -r '.Images.Image[]')
+for ((p = 1; p < 100; p++)); do
+    x=$($cmd --PageNumber $p)
+    if [ "$?" != "0" ]; then
+        echo "$(basename $0): Failed to run Aliyun API." >&2
+        exit 1
+    fi
+    image=$(echo $x | jq -r '.Images.Image[]')
+    [ -z "$image" ] && break
+    images="$images $image"
+done
 
 if [ "$all" = "true" ]; then
-    id_list=$(echo $blocks | jq -r '.ImageId')
+    id_list=$(echo $images | jq -r '.ImageId')
 else
     # Platform is "Red Hat" only
-    id_list=$(echo $blocks | jq -r 'select(.Platform=="Red Hat") | .ImageId')
+    id_list=$(echo $images | jq -r 'select(.Platform=="Red Hat") | .ImageId')
 fi
 
 # Query image one-by-one and add data into a table
 for id in $id_list; do
-    block=$(echo $blocks | jq -r "select(.ImageId==\"$id\")")
+    block=$(echo $images | jq -r "select(.ImageId==\"$id\")")
     if [ "$?" != "0" ]; then
         echo "$(basename $0): Error while looking for the specific image -- $id" >&2
         exit 1
