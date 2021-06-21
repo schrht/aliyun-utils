@@ -8,16 +8,21 @@ PATH=$PATH:.
 
 [ -f ./pass.txt ] && grep -v -f ./pass.txt ./full.txt > /tmp/todo.txt || cat ./full.txt > /tmp/todo.txt
 
-echo -e "\nNotice: 'available_flavors.txt' was changed on $(stat -c %z available_flavors.txt)" 
-echo -e "With time passes you may want to run './query_available_flavors.sh -o available_flavors.txt' again..."
+resource_matrix=/tmp/aliyun_flavor_distribution.txt
+if [ -f $resource_matrix ]; then
+	echo "Notice: '$resource_matrix' was updated at $(stat -c %z $resource_matrix)." >&2
+	echo "Notice: You might consider running 'query_flavors.sh' again to get the latest status." >&2
+else
+	query_flavors.sh || exit 1
+fi
 
 for flavor in $(cat /tmp/todo.txt); do
 	echo -e "------\n$flavor:"
-	grep $flavor ./available_flavors.txt | cut -d, -f1
+	grep $flavor $resource_matrix | cut -d, -f1
 done
 
 # get best region
 echo "======"
-grep -f /tmp/todo.txt ./available_flavors.txt | cut -d, -f1 | uniq -c | sort -nr
+grep -f /tmp/todo.txt $resource_matrix | cut -d, -f1 | uniq -c | sort -nr
 
 exit 0
