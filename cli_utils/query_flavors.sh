@@ -8,8 +8,8 @@
 #   jq     - Command-line JSON processor
 
 function show_usage() {
-    echo "Get a list of available flavors."
-    echo "$(basename $0) [-o OUTPUT_FILE] [-r REGION_LIST]"
+    echo "Get a list of available flavors." >&2
+    echo "$(basename $0) [-o OUTPUT_FILE] [-r REGION_LIST]" >&2
 }
 
 while getopts :ho:r: ARGS; do
@@ -53,14 +53,14 @@ tmpfile=/tmp/aliyun_flavor_distribution.tmp
 # Get all regions if not specified
 if [ -z "$regions" ]; then
     x=$(aliyun ecs DescribeRegions | jq -r '.Regions.Region[].RegionId')
-    [ "$?" != "0" ] && echo $x && exit 1
+    [ "$?" != "0" ] && echo $x >&2 && exit 1
     regions=$x
 fi
 
 # Query flavors in each region
 for region in $regions; do
     # Get AvailableResource
-    echo -e "\nQuerying available resource in $region ..."
+    echo -e "\nQuerying resource from the region $region ..." >&2
     x=$(aliyun ecs DescribeAvailableResource --RegionId $region \
         --DestinationResource InstanceType)
     if [ "$?" != "0" ]; then
@@ -87,6 +87,9 @@ for region in $regions; do
     done
 done
 
+echo -e "\nSaving resource matrix to $output ..." >&2
 mv $tmpfile $output
+
+echo -e "\nDone!" >&2
 
 exit 0
