@@ -9,7 +9,7 @@ PATH=$PATH:.
 [ "$1" = "-f" ] && flavor=$2
 [ "$1" = "-z" ] && zone=$2
 
-[ -f ./pass.txt ] && grep -v -f ./pass.txt ./full.txt > /tmp/todo.txt || cat ./full.txt > /tmp/todo.txt
+[ -f ./pass.txt ] && grep -v -f ./pass.txt ./full.txt >/tmp/todo.txt || cat ./full.txt >/tmp/todo.txt
 
 resource_matrix=/tmp/aliyun_flavor_distribution.txt
 if [ -f $resource_matrix ]; then
@@ -18,29 +18,45 @@ if [ -f $resource_matrix ]; then
 else
 	query_flavors.sh >&2 || exit 1
 fi
+echo "======" >&2
 
 # get matrix
-grep -f /tmp/todo.txt $resource_matrix > /tmp/matrix.txt
+grep -f /tmp/todo.txt $resource_matrix >/tmp/matrix.txt
 
 # show status
 if [ ! -z $flavor ]; then
 	# show flavor status
-	echo -e "======\nFLAVOR STATUS\n------\n$flavor:" >&2
-	grep $flavor /tmp/matrix.txt | cut -d, -f1
+	echo -e "FLAVOR STATUS" >&2
+
+	if [ "$flavor" = "all" ]; then
+		for flavor in $(cat /tmp/todo.txt); do
+			echo -e "\n$flavor\n------"
+			grep $flavor /tmp/matrix.txt | cut -d, -f1
+		done
+	else
+		echo -e "\n$flavor\n------"
+		grep $flavor /tmp/matrix.txt | cut -d, -f1
+	fi
 fi
 
-
-# show zone status
 if [ ! -z $zone ]; then
-	echo -e "======\nZONE STATUS\n------\n$zone:" >&2
-	grep $zone /tmp/matrix.txt | cut -d, -f2
+	# show zone status
+	echo -e "ZONE DETAILS" >&2
+	if [ "$zone" = "all" ]; then
+		for zone in $(cat $resource_matrix | cut -d, -f1 | sort -u); do
+			echo -e "\n$zone\n------"
+			grep $zone /tmp/matrix.txt | cut -d, -f2
+		done
+	else
+		echo -e "\n$zone\n------"
+		grep $zone /tmp/matrix.txt | cut -d, -f2
+	fi
 fi
 
-# get best region
 if [ -z $flavor ] && [ -z $zone ]; then
-	echo -e "======\nBEST REGIONS\n------" >&2
+	# show best region
+	echo -e "BEST REGIONS\n" >&2
 	cat /tmp/matrix.txt | cut -d, -f1 | uniq -c | sort -nr
 fi
 
 exit 0
-
