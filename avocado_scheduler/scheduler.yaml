@@ -1,0 +1,2 @@
+containers: "ac1 ac2 ac3 ac4 ac5 ac6 ac7 ac8"
+flavors: "ecs.g7.32xlarge ecs.c7.32xlarge ecs.c7.xlarge ecs.g7.16xlarge ecs.g7.2xlarge ecs.g7.3xlarge ecs.g7.4xlarge ecs.c7.16xlarge ecs.c7.2xlarge ecs.c7.3xlarge ecs.c7.4xlarge ecs.c7.6xlarge ecs.c7.8xlarge ecs.c7.large"
