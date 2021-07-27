@@ -57,6 +57,11 @@ CpuCoreCount
 MemorySize
 GPUAmount
 GPUSpec
+DiskQuantity
+NvmeSupport
+LocalStorageAmount
+LocalStorageCapacity
+LocalStorageCategory
 EniQuantity
 EniTotalQuantity
 EniIpv6AddressQuantity
@@ -66,13 +71,12 @@ PrimaryEniQueueNumber
 SecondaryEniQueueNumber
 TotalEniQueueQuantity
 MaximumQueueNumberPerEni
+EriQuantity
 InstanceBandwidthRx
 InstanceBandwidthTx
 InstancePpsRx
-InstancePpsTx
-LocalStorageAmount
-LocalStorageCapacity
-LocalStorageCategory"
+InstancePpsTx"
+
 
 # Create the table
 table=""
