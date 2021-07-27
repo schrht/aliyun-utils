@@ -147,13 +147,13 @@ if [ ! -z "$image_name" ]; then
 
 	rehl_ver=$(echo $image_name | sed 's/.*[A-Za-z][._-]\([0-9]\)[._-]\([0-9]\)[._-].*/\1.\2/')
 
-	#if [[ $image_name =~ ^RHEL-[67] ]] && [[ ! $image_name =~ ^RHEL-8.[0123] ]]; then
-	if [[ $image_name =~ ^RHEL- ]]; then
-		# For the BYOS images (named as "RHEL-X.Y")
-		image_user=cloud-user
-	else
-		image_user=root
-	fi
+#	if [[ $image_name =~ ^RHEL- ]]; then
+#		# For the BYOS images (named as "RHEL-X.Y")
+#		image_user=cloud-user
+#	else
+#		image_user=root
+#	fi
+	image_user=root
 
 	image_pass=$(read_data $file VM.password)
 	if [ -z "$image_pass" ]; then
