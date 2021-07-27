@@ -7,6 +7,16 @@ set -e
 [ -z "$FLAVORS" ] && echo "\$FLAVORS is not set." && exit 1
 [ -z "$CONTAINER_NAME" ] && echo "\$CONTAINER_NAME is not set." && exit 1
 
+echo "===================="
+cat $PWD/$CONTAINER_NAME/data/alibaba_common.yaml
+echo "--------------------"
+if [ -f $PWD/$CONTAINER_NAME/data/alibaba_testcases.yaml ]; then
+	cat $PWD/$CONTAINER_NAME/data/alibaba_testcases.yaml
+else
+	echo "Will run all testcases."
+fi
+sleep 5s
+
 for flavor in $FLAVORS; do
 	echo "===================="
 	provision_flavor_data.sh $flavor $PWD/$CONTAINER_NAME/data/alibaba_flavors.yaml
