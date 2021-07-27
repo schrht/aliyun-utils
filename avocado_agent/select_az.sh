@@ -7,7 +7,7 @@ SOURCE_PATH=$(dirname ${BASH_SOURCE[0]})
 PATH=$SOURCE_PATH/../cli_utils:$PATH
 PATH=$SOURCE_PATH/../aliyun_list_flavors:$PATH
 
-DSTRIBUTION_FILE=/tmp/aliyun_instance_distribution.txt
+DSTRIBUTION_FILE=/tmp/aliyun_flavor_distribution.txt
 ELIGIBLE_ZONES_FILE=./eligible_zones.txt
 
 function show_usage() {
