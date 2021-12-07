@@ -10,6 +10,12 @@ function collect_results() {
 	fres=$fdir/results.json
 	flog=$fdir/job.log
 
+	if [ ! -f $fres ] || [ ! -f $flog ]; then
+		echo "The necessary files are missing, skip the analysis of '$fdir'." >&2
+		SKIPPED="$fdir $SKIPPED"
+		return
+	fi
+
 	res_t=$(cat $fres | jq -r '.total')
 	res_p=$(cat $fres | jq -r '.pass')
 	res_c=$(cat $fres | jq -r '.cancel')
@@ -37,9 +43,13 @@ fi
 dlist="$@"
 
 # Collect results for each avocado-cloud run
+unset SKIPPED
 for d in $dlist; do
 	collect_results $d
 done
+
+# Show skipped tests if there is
+[ ! -z "$SKIPPED" ] && echo -e "\nSkipped:\n$SKIPPED\n" >&2
 
 # Show the summary as a table
 echo -e $table | column -t -s ',' -R 6,7,8,9,10,11 -N LogID,Flavor,AZone,ImageName,ImageID,TOTAL,PASS,FAIL,ERROR,CANCEL,SKIP
