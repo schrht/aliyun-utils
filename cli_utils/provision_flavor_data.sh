@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Description: Provision the flavor data for testing.
+# Maintainer: Charles Shih <schrht@gmail.com>
+
 function show_usage() {
     echo -e "Usage: $0 <instance family or instance type> [YAML file]"
 }
@@ -88,7 +91,7 @@ for instance_type in $instance_types; do
 done
 
 # move the yaml file
-mv $file $file.bak 2>/dev/null
+#mv $file $file.bak 2>/dev/null
 mv $yamlf $file
 
 exit 0
